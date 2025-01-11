@@ -31,8 +31,8 @@ export const AuthProviderList = (props: any): any => {
 
   const [title, setTitle] = useState('');
   const [autor, setAutor] = useState('');
-  const [qtdPaginas, setQtdPaginas] = useState();
-  const [genero, setGenero] = useState();
+  const [qtdPaginas, setQtdPaginas] = useState<number>(0);
+  const [genero, setGenero] = useState('');
 
   const [selectedFlag, setSelectedFlag] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -122,6 +122,9 @@ export const AuthProviderList = (props: any): any => {
                     <Input
                       title="Quantidade de páginas:"
                       LabelStyle={styles.label}
+                      value={qtdPaginas !== null ? qtdPaginas.toString() : ""} // Converte para string
+                      onChangeText={(text) => setQtdPaginas(Number(text))} // Converte para número
+                      keyboardType="numeric" // Mostra teclado numérico
                     />
                   </View>
                 </View>
@@ -130,6 +133,8 @@ export const AuthProviderList = (props: any): any => {
                     <Input
                       title="Gênero:"
                       LabelStyle={styles.label}
+                      value={genero}
+                      onChangeText={setGenero}
                     />
                   </View>
                   <View>
