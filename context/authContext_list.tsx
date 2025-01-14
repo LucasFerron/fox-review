@@ -8,13 +8,16 @@ import {
   KeyboardAvoidingView,
   Platform
 } from 'react-native';
-import { Input } from '../components/Inputs/index';
 import  Flag  from '../Flag/index';
-import { Modalize } from 'react-native-modalize';
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import { ScrollView } from 'react-native-gesture-handler';
 import Star from '../components/Star';
+import { Modalize } from 'react-native-modalize';
+import { Input } from '../components/Inputs/index';
+import { ScrollView } from 'react-native-gesture-handler';
+import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import CustomDateTimerPicker from '../components/CustomDateTimePicker';
+// Banco de dados
+import {database} from '../config/firebase';
+import { ref, push } from 'firebase/database';
 
 export const AuthContextList: any = createContext({});
 
@@ -38,6 +41,7 @@ export const AuthProviderList = (props: any): any => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false)
 
+
   const onOpen = () => {
     modalizeRef?.current?.open();
   };
@@ -49,11 +53,14 @@ export const AuthProviderList = (props: any): any => {
   const _renderFlags = () => {
     return (
       flags.map((item, index) => (
-        <TouchableOpacity key={index}>
+        <TouchableOpacity key={index}
+          onPress={()=>{
+            setSelectedFlag(item.caption)
+          }}>
           <Flag
             caption={item.caption}
             color={item.color}
-             selected
+             selected={item.caption == selectedFlag}
           />
         </TouchableOpacity>
     )));
@@ -61,6 +68,45 @@ export const AuthProviderList = (props: any): any => {
   const handleDateChange = (date) =>{
     setSelectedDate(date);
   };
+  
+  
+
+  async function handleSave() {
+    try {
+      if (!title || !autor || !qtdPaginas || !genero || !selectedFlag) {
+        alert("Por favor, preencha todos os campos corretamente!");
+        return;
+      }
+  
+      const newBook = {
+        title,
+        autor,
+        qtdPaginas,
+        genero,
+        flag: selectedFlag,
+        lançamento: selectedDate.toISOString(),
+      };
+      const booksRef = ref(database, 'books');
+  
+      // Salva  no banco de dados
+      await push(booksRef, newBook);
+  
+      alert("Livro salvo com sucesso!");
+  
+      // Limpa os campos após o salvamento
+      setTitle('');
+      setAutor('');
+      setQtdPaginas(0);
+      setGenero('');
+      setSelectedFlag('');
+      setSelectedDate(new Date());
+      onClose(); // Fecha o modal
+    } catch (error) {
+      console.error("Erro ao salvar o livro: ", error);
+      alert("Houve um erro ao salvar o livro. Tente novamente.");
+    }
+  }
+
 
   const _container = () => {
     return (
@@ -75,7 +121,7 @@ export const AuthProviderList = (props: any): any => {
                 <MaterialIcons name="close" size={30} />
               </TouchableOpacity>
               <Text style={styles.title}>Adicionar livro</Text>
-              <TouchableOpacity>
+               <TouchableOpacity onPress={handleSave}> 
                 <AntDesign name="check" size={30} />
               </TouchableOpacity>
             </View>
@@ -161,7 +207,7 @@ export const AuthProviderList = (props: any): any => {
       {props.children}
       <Modalize
         ref={modalizeRef}
-        childrenStyle={{ height: Dimensions.get('window').height/1.7}}
+        childrenStyle={{ height: Dimensions.get('window').height/1.3}}
         adjustToContentHeight={true}>
         {_container()}
       </Modalize>

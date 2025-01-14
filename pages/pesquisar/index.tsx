@@ -67,7 +67,7 @@ export default function Pesquisar() {
               <Text style={style.descriptionCard}>{item.description}</Text>
             </View>
           </View>
-          <Flag caption="Quero ler" color={'yellow'} />
+          <Flag caption="Quero ler" color={'orange'} />
         </View>
       </TouchableOpacity>
     );
