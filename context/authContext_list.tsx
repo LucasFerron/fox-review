@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, { createContext, useContext, useRef, useState, useEffect } from 'react';
 import {
   Dimensions,
   Text,
@@ -6,19 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  ScrollView,
 } from 'react-native';
 import  Flag  from '../Flag/index';
 import Star from '../components/Star';
 import { Modalize } from 'react-native-modalize';
 import { Input } from '../components/Inputs/index';
-import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import CustomDateTimerPicker from '../components/CustomDateTimePicker';
 // Banco de dados
-import {database} from '../config/firebase';
-import { ref, push } from 'firebase/database';
+import { database } from '../config/firebase';
+import { ref, push, onValue } from 'firebase/database';
 
+// Contexto
 export const AuthContextList: any = createContext({});
 
 const flags = [
@@ -28,6 +29,8 @@ const flags = [
   { caption: 'esquecido', color: '#000000' },
 ];
 
+//coloca na tela onde 
+
 // Função para abrir o modal
 export const AuthProviderList = (props: any): any => {
   const modalizeRef = useRef<Modalize>(null);
@@ -36,49 +39,41 @@ export const AuthProviderList = (props: any): any => {
   const [autor, setAutor] = useState('');
   const [qtdPaginas, setQtdPaginas] = useState<number>(0);
   const [genero, setGenero] = useState('');
-
   const [selectedFlag, setSelectedFlag] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
+  const [newBook, setNewBook] = useState<any[]>([]); // Estado para armazenar os livros recuperados
 
-  const onOpen = () => {
-    modalizeRef?.current?.open();
-  };
-
-  const onClose = () => {
-    modalizeRef?.current?.close();
-  }
+  const onOpen = () => modalizeRef?.current?.open();
+  const onClose = () => modalizeRef?.current?.close();
 
   const _renderFlags = () => {
     return (
       flags.map((item, index) => (
-        <TouchableOpacity key={index}
-          onPress={()=>{
-            setSelectedFlag(item.caption)
-          }}>
+        <TouchableOpacity key={index} onPress={() => setSelectedFlag(item.caption)}>
           <Flag
             caption={item.caption}
             color={item.color}
-             selected={item.caption == selectedFlag}
+            selected={item.caption === selectedFlag}
           />
         </TouchableOpacity>
-    )));
+      ))
+    );
   };
-  const handleDateChange = (date) =>{
+
+  const handleDateChange = (date: Date) => {
     setSelectedDate(date);
   };
-  
-  
 
-  async function handleSave() {
+  const handleSave = async () => {
     try {
       if (!title || !autor || !qtdPaginas || !genero || !selectedFlag) {
         alert("Por favor, preencha todos os campos corretamente!");
         return;
       }
   
-      const newBook = {
+      const newBookData = {
         title,
         autor,
         qtdPaginas,
@@ -88,12 +83,11 @@ export const AuthProviderList = (props: any): any => {
       };
       const booksRef = ref(database, 'books');
   
-      // Salva  no banco de dados
-      await push(booksRef, newBook);
+      await push(booksRef, newBookData);
   
       alert("Livro salvo com sucesso!");
   
-      // Limpa os campos após o salvamento
+
       setTitle('');
       setAutor('');
       setQtdPaginas(0);
@@ -105,23 +99,34 @@ export const AuthProviderList = (props: any): any => {
       console.error("Erro ao salvar o livro: ", error);
       alert("Houve um erro ao salvar o livro. Tente novamente.");
     }
-  }
+  };
 
+  useEffect(() => {
+    const booksRef = ref(database, 'books');
+    onValue(booksRef, (snapshot) => {
+      const data = snapshot.val();
+      const booksList = [];
+      for (let id in data) {
+        booksList.push({ id, ...data[id] });
+      }
+      setNewBook(booksList);
+    });
+  }, []); 
 
   const _container = () => {
     return (
       <ScrollView>
         <KeyboardAvoidingView
           style={styles.container}
-          behavior={Platform.OS === 'ios'?'padding':'height'}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <View >
+          <View>
             <View style={styles.header}>
-              <TouchableOpacity onPress={()=>onClose()}>
+              <TouchableOpacity onPress={onClose}>
                 <MaterialIcons name="close" size={30} />
               </TouchableOpacity>
               <Text style={styles.title}>Adicionar livro</Text>
-               <TouchableOpacity onPress={handleSave}> 
+              <TouchableOpacity onPress={handleSave}>
                 <AntDesign name="check" size={30} />
               </TouchableOpacity>
             </View>
@@ -140,62 +145,57 @@ export const AuthProviderList = (props: any): any => {
               />
               <Input
                 title="Nome do autor(a):"
-                LabelStyle={styles.label} 
+                LabelStyle={styles.label}
                 value={autor}
                 onChangeText={setAutor}
               />
-              
-                <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
-                  <View style={{width:'40%'}}>
-                    <TouchableOpacity onPress={()=>setShowDatePicker(true)}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{ width: '40%' }}>
+                  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                    <Input
+                      title="Lançamento:"
+                      LabelStyle={styles.label}
+                      editable={false}
+                      value={selectedDate.toLocaleDateString()}
+                      onPress={() => setShowDatePicker(true)}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <CustomDateTimerPicker
+                  onDateChange={handleDateChange}
+                  setShow={setShowDatePicker}
+                  show={showDatePicker}
+                  type={'date'}
+                />
+                <View style={{ width: '50%' }}>
                   <Input
-                        title="Lançamento:"
-                        LabelStyle={styles.label}
-                        editable={false}
-                        value={selectedDate.toLocaleDateString()}
-                        onPress={()=>setShowDatePicker(true)}
-                      
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <CustomDateTimerPicker
-                      onDateChange={handleDateChange}
-                      setShow={setShowDatePicker}
-                      show={showDatePicker}
-                      type={'date'}
-                    />
-                  <View style={{width:'50%'}}>
-                    <Input
-                      title="Quantidade de páginas:"
-                      LabelStyle={styles.label}
-                      value={qtdPaginas !== null ? qtdPaginas.toString() : ""} // Converte para string
-                      onChangeText={(text) => setQtdPaginas(Number(text))} // Converte para número
-                      keyboardType="numeric" // Mostra teclado numérico
-                    />
-                  </View>
+                    title="Quantidade de páginas:"
+                    LabelStyle={styles.label}
+                    value={qtdPaginas !== null ? qtdPaginas.toString() : ""}
+                    onChangeText={(text) => setQtdPaginas(Number(text))}
+                    keyboardType="numeric"
+                  />
                 </View>
-                <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
-                  <View style={{ width: '60%'}}>
-                    <Input
-                      title="Gênero:"
-                      LabelStyle={styles.label}
-                      value={genero}
-                      onChangeText={setGenero}
-                    />
-                  </View>
-                  <View>
-                    <Star/>
-                  </View>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{ width: '60%' }}>
+                  <Input
+                    title="Gênero:"
+                    LabelStyle={styles.label}
+                    value={genero}
+                    onChangeText={setGenero}
+                  />
                 </View>
-                
-              
+                <View>
+                  <Star />
+                </View>
+              </View>
+
               <View style={styles.containerFlag}>
                 <Text style={styles.label}>Situação:</Text>
                 <View style={styles.Rowflags}>{_renderFlags()}</View>
               </View>
-
             </View>
-
           </View>
         </KeyboardAvoidingView>
       </ScrollView>
@@ -203,11 +203,11 @@ export const AuthProviderList = (props: any): any => {
   };
 
   return (
-    <AuthContextList.Provider value={{ onOpen }}>
+    <AuthContextList.Provider value={{ onOpen,newBook }}>
       {props.children}
       <Modalize
         ref={modalizeRef}
-        childrenStyle={{ height: Dimensions.get('window').height/1.3}}
+        childrenStyle={{ height: Dimensions.get('window').height / 1.3 }}
         adjustToContentHeight={true}>
         {_container()}
       </Modalize>
@@ -243,18 +243,17 @@ export const styles = StyleSheet.create({
     width: '100%',
     padding: 10,
     minWidth: 100,
-    
   },
-  containerStar:{
+  containerStar: {
     width: '100%',
     padding: 10,
   },
   label: {
     fontWeight: 'bold',
     color: '#000',
-    textAlign:'center',
-    fontSize:12,
-    flexWrap:'wrap'
+    textAlign: 'center',
+    fontSize: 12,
+    flexWrap: 'wrap',
   },
   Rowflags: {
     flexDirection: 'row',

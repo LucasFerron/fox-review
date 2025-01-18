@@ -9,4 +9,5 @@ export const style = StyleSheet.create({
     backgroundColor: 'orange',
     borderRadius:4
   }
+  
 })

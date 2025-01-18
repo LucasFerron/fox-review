@@ -9,70 +9,35 @@ import quarta from '../../assets/quarta.jpg';
 import  Flag from '../../Flag/index';
 import { ImageSourcePropType } from 'react-native';
 
-type PropCard = {
-  item: number;
-  capa: ImageSourcePropType;
-  title: string;
-  description: string;
-  year: number;
-  act: string;
-  caption: 'Quero ler' | 'Lendo' | 'Lido' | 'Abandonado ';
-  nota: '1 estrela' | '2 estrelas' | '3 estrelas ' | '4 estrelas' | '5 estrelas';
-};
-
-const data: Array<PropCard> = [
-  {
-    item: 0,
-    capa: quarta,
-    title: 'Quarta Asa',
-    description: 'Ficção',
-    year: 2023,
-    act: 'Claudio',
-    caption: 'Lendo',
-    nota: '1 estrela',
-  },
-  {
-    item: 1,
-    capa: quarta,
-    title: 'Uma Longa Jornada',
-    description: 'Romance',
-    year: 2013,
-    act: 'Claudio',
-    caption: 'Quero ler',
-    nota: '1 estrela',
-  },
-  {
-    item: 2,
-    capa: quarta,
-    title: 'Duna',
-    description: 'Ficção',
-    year: 1965,
-    act: 'Claudio',
-    caption: 'Quero ler',
-    nota: '1 estrela',
-  },
-];
 
 export default function Pesquisar() {
-  const { onOpen } = useContext(AuthContextList);
-
+ 
+  const {onOpen, newBook} = useContext<AuthContextType>(AuthContextList);
+ 
   const _renderCard = (item: PropCard) => {
+    const cores =
+    item.flag == 'quero ler'? '#3DBBF6':
+    item.flag == 'lendo'? '#FFD83A':
+    item.flag == 'lido'? '#63C263':
+    item.flag == 'esquecido'? '#000000': 'blue'//Arrumar cores
     return (
       <TouchableOpacity style={style.card}>
         <View style={style.rowCard}>
           <View style={style.rowCardLeft}>
-            <Image style={style.capa} source={item.capa} />
+            {/* <Image style={style.capa} source={item.capa} /> */}
             <View>
               <Text style={style.titleCard}>{item.title}</Text>
-              <Text style={style.descriptionCard}>{item.description}</Text>
+              <Text style={style.descriptionCard}>{item.genero}</Text>
             </View>
           </View>
-          <Flag caption="Quero ler" color={'orange'} />
+          <Flag caption={item.flag} color={cores} />
+          {/* ajustar cor ainda */}
         </View>
       </TouchableOpacity>
     );
   };
 
+  // ve agora.
   return (
       <View style={style.container}>
       <View style={style.header}>
@@ -83,10 +48,10 @@ export default function Pesquisar() {
       </View>
       <View style={style.boxList}>
         <FlatList
-          data={data}
+          data={newBook}
           style={{ marginTop: 40, paddingHorizontal: 30 }}
-          keyExtractor={(item) => item.item.toString()}
-          renderItem={({ item }) => _renderCard(item)}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => {return (_renderCard(item))}}
         />
       </View>
       <TouchableOpacity style={style.TabItemButton} onPress={() => onOpen()}>
@@ -96,4 +61,5 @@ export default function Pesquisar() {
       </TouchableOpacity>
     </View>
   );
+  // isso e de boa resolver , vamos arrumar as props. suas props deve ter mesmo caractertista do banco 
 }

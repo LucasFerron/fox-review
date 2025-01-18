@@ -1,6 +1,6 @@
 import React, {forwardRef, Fragment, LegacyRef} from 'react';
 import {View, Text, TextInput, TextInputProps, TouchableOpacity, StyleProp, TextStyle} from 'react-native';
-import {MaterialIcons, FontAwesome6} from '@expo/vector-icons';
+import {MaterialIcons, FontAwesome6,Octicons} from '@expo/vector-icons';
 import {style} from './styles';
 //Reutilização de códigos (inputs)
 
@@ -12,8 +12,8 @@ type IconCompoment = React.ComponentType<React.ComponentProps<typeof MaterialIco
 
 //Define um nome para facilitar a ciração dos inputs
 type Props<IconType = any> = TextInputProps & {
-  IconLeft?: React.ComponentType<IconCompoment>;
-  IconRight?: React.ComponentType<IconCompoment>;
+  IconLeft?: React.ComponentType<IconCompoment>|any;
+  IconRight?: React.ComponentType<IconCompoment>|any;
   iconLeftName?: string,
   iconRightName?: string,
   title?: string,
@@ -21,7 +21,7 @@ type Props<IconType = any> = TextInputProps & {
   onIconRightPress?: () => void,
   height?:number,
   width?:number,
-  labelStyle?:StyleProp<TextStyle>
+  labelStyle?:StyleProp<TextStyle>,
 
 }
 export const Input = forwardRef((Props:Props,ref: LegacyRef<TextInput> | null)=>{
@@ -46,6 +46,7 @@ export const Input = forwardRef((Props:Props,ref: LegacyRef<TextInput> | null)=>
     }else{
       return 20;
     }
+    
   };
   return (
     <Fragment>
@@ -53,6 +54,7 @@ export const Input = forwardRef((Props:Props,ref: LegacyRef<TextInput> | null)=>
     <View style={[style.BoxInput, {paddingLeft:calculateSizePaddingLeft(),height:height||40, width:width||'100%'}]}>
     {IconLeft && iconLeftName &&(
       <TouchableOpacity onPress={onIconLeftPress} style={style.button}>
+        {/* esse prop n */}
         <IconLeft name={iconLeftName} size={20} color={'#02C4D2'} style={style.Icon}/>
       </TouchableOpacity>
     )}
