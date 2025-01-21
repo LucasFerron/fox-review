@@ -9,7 +9,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import  Flag  from '../Flag/index';
+import Flag from '../Flag/index';
 import Star from '../components/Star';
 import { Modalize } from 'react-native-modalize';
 import { Input } from '../components/Inputs/index';
@@ -17,7 +17,7 @@ import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import CustomDateTimerPicker from '../components/CustomDateTimePicker';
 // Banco de dados
 import { database } from '../config/firebase';
-import { ref, push, onValue } from 'firebase/database';
+import { ref, push, onValue, getDatabase, remove, update } from 'firebase/database';
 
 // Contexto
 export const AuthContextList: any = createContext({});
@@ -28,8 +28,6 @@ const flags = [
   { caption: 'lido', color: '#63C263' },
   { caption: 'esquecido', color: '#000000' },
 ];
-
-//coloca na tela onde 
 
 // Função para abrir o modal
 export const AuthProviderList = (props: any): any => {
@@ -44,6 +42,7 @@ export const AuthProviderList = (props: any): any => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [newBook, setNewBook] = useState<any[]>([]); // Estado para armazenar os livros recuperados
+  const [dataFilter, setDataFilter] = useState<any[]>([]); // Adicionado o estado dataFilter
 
   const onOpen = () => modalizeRef?.current?.open();
   const onClose = () => modalizeRef?.current?.close();
@@ -87,7 +86,6 @@ export const AuthProviderList = (props: any): any => {
   
       alert("Livro salvo com sucesso!");
   
-
       setTitle('');
       setAutor('');
       setQtdPaginas(0);
@@ -101,7 +99,7 @@ export const AuthProviderList = (props: any): any => {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { //adiciona o item no banco de dados
     const booksRef = ref(database, 'books');
     onValue(booksRef, (snapshot) => {
       const data = snapshot.val();
@@ -110,8 +108,25 @@ export const AuthProviderList = (props: any): any => {
         booksList.push({ id, ...data[id] });
       }
       setNewBook(booksList);
+      setDataFilter(booksList); 
     });
   }, []); 
+
+  const excluir = (id: string) => {
+    const db = getDatabase(); 
+    const bookRef = ref(db, 'books/' + id); 
+  
+    remove(bookRef) // Remove o item do banco de dados
+      .then(() => {
+        console.log('Removido');
+        // Atualiza os dados filtrando o item removido
+        setNewBook((value) => value.filter((item) => item.id !== id));
+        setDataFilter((value) => value.filter((item) => item.id !== id));
+      })
+      .catch((error) => console.error('Erro ao exluir livro :', error));
+  };
+  
+
 
   const _container = () => {
     return (
@@ -203,7 +218,7 @@ export const AuthProviderList = (props: any): any => {
   };
 
   return (
-    <AuthContextList.Provider value={{ onOpen,newBook }}>
+    <AuthContextList.Provider value={{ onOpen, newBook, excluir }}>
       {props.children}
       <Modalize
         ref={modalizeRef}

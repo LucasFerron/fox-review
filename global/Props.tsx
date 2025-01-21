@@ -2,18 +2,9 @@
   interface AuthContextType {
     newBook:Array<PropCard>;
     onOpen:()=>void;
+    excluir:Function,
   }
   
-  // Definindo o tipo de um livro
-  // type PropCard = {
-  //   item:number,
-  //   title: string;
-  //   description: string;
-  //   year: number;
-  //   act: string;    
-  //   caption: PropFlags; 
-  //   nota: PropStars;
-  // }
 
   type PropCard = {
     "autor": string, 
