@@ -3,6 +3,7 @@
     newBook:Array<PropCard>;
     onOpen:()=>void;
     excluir:Function,
+    handleEdit:Function,
   }
   
 
@@ -15,9 +16,6 @@
     "qtdPaginas": number, 
     "title": string
   }
-
-  //quando vc adicionar no banco , depois vc coloca nas props aqui , se nao pode dar ruim.
-  //era isso certo?
   
 
 

@@ -13,7 +13,7 @@ import {Swipeable} from 'react-native-gesture-handler';
 
 export default function Pesquisar() {
  
-  const {onOpen, newBook, excluir} = useContext<AuthContextType>(AuthContextList);
+  const {onOpen, newBook, excluir, handleEdit} = useContext<AuthContextType>(AuthContextList);
   const swipeableRefs = useRef([]);
 
   const renderRightActions =()=>{
@@ -44,8 +44,8 @@ const handleSwipeOpen = (directions: 'right' | 'left', item, index)=>{
   if (directions == 'right'){
     excluir(item.id)
     
-  }else {
-    //
+  }else if (directions == 'left'){
+    handleEdit(item.id)
   }
 
 }
@@ -84,7 +84,6 @@ const handleSwipeOpen = (directions: 'right' | 'left', item, index)=>{
     );
   };
 
-  // ve agora.
   return (
       <View style={style.container}>
       <View style={style.header}>

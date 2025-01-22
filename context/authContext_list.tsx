@@ -40,6 +40,7 @@ export const AuthProviderList = (props: any): any => {
   const [selectedFlag, setSelectedFlag] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState('')
 
   const [newBook, setNewBook] = useState<any[]>([]); // Estado para armazenar os livros recuperados
   const [dataFilter, setDataFilter] = useState<any[]>([]); // Adicionado o estado dataFilter
@@ -119,14 +120,68 @@ export const AuthProviderList = (props: any): any => {
     remove(bookRef) // Remove o item do banco de dados
       .then(() => {
         console.log('Removido');
-        // Atualiza os dados filtrando o item removido
+
         setNewBook((value) => value.filter((item) => item.id !== id));
         setDataFilter((value) => value.filter((item) => item.id !== id));
       })
       .catch((error) => console.error('Erro ao exluir livro :', error));
   };
-  
 
+  const handleEdit = (bookId: string) => {
+    // Carregar os dados do livro que está sendo editado
+    const book = newBook.find((item) => item.id === bookId);
+    if (book) {
+      setTitle(book.title);
+      setAutor(book.autor);
+      setQtdPaginas(book.qtdPaginas);
+      setGenero(book.genero);
+      setSelectedFlag(book.flag);
+      setSelectedDate(new Date(book.lançamento)); 
+      setSelectedBookId(bookId);
+      onOpen();
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      if (!title || !autor || !qtdPaginas || !genero || !selectedFlag) {
+        alert("Por favor, preencha todos os campos corretamente!");
+        return;
+      }
+
+      const updatedBookData = {
+        title,
+        autor,
+        qtdPaginas,
+        genero,
+        flag: selectedFlag,
+        lançamento: selectedDate.toISOString(),
+      };
+
+      const bookRef = ref(database, 'books/' + selectedBookId); // Referência para o livro específico
+      await update(bookRef, updatedBookData);
+
+      alert("Livro atualizado com sucesso!");
+
+      const updatedBooks = newBook.map((book) =>
+        book.id === selectedBookId ? { ...book, ...updatedBookData } : book
+      );
+      setNewBook(updatedBooks);
+      setDataFilter(updatedBooks);
+
+      setTitle('');
+      setAutor('');
+      setQtdPaginas(0);
+      setGenero('');
+      setSelectedFlag('');
+      setSelectedDate(new Date());
+      setSelectedBookId('');
+      onClose(); 
+    } catch (error) {
+      console.error("Erro ao atualizar o livro: ", error);
+      alert("Houve um erro ao atualizar o livro. Tente novamente.");
+    }
+  };
 
   const _container = () => {
     return (
@@ -141,26 +196,26 @@ export const AuthProviderList = (props: any): any => {
                 <MaterialIcons name="close" size={30} />
               </TouchableOpacity>
               <Text style={styles.title}>Adicionar livro</Text>
-              <TouchableOpacity onPress={handleSave}>
+              <TouchableOpacity onPress={selectedBookId ? handleUpdate : handleSave}>
                 <AntDesign name="check" size={30} />
               </TouchableOpacity>
             </View>
             <View style={styles.content}>
               <Input
                 title="Capa do livro:"
-                LabelStyle={styles.label}
+                labelStyle={styles.label}
                 height={100}
                 width={80}
               />
               <Input
                 title="Título do livro:"
-                LabelStyle={styles.label}
+                labelStyle={styles.label}
                 value={title}
                 onChangeText={setTitle}
               />
               <Input
                 title="Nome do autor(a):"
-                LabelStyle={styles.label}
+                labelStyle={styles.label}
                 value={autor}
                 onChangeText={setAutor}
               />
@@ -169,7 +224,7 @@ export const AuthProviderList = (props: any): any => {
                   <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                     <Input
                       title="Lançamento:"
-                      LabelStyle={styles.label}
+                      labelStyle={styles.label}
                       editable={false}
                       value={selectedDate.toLocaleDateString()}
                       onPress={() => setShowDatePicker(true)}
@@ -185,7 +240,7 @@ export const AuthProviderList = (props: any): any => {
                 <View style={{ width: '50%' }}>
                   <Input
                     title="Quantidade de páginas:"
-                    LabelStyle={styles.label}
+                    labelStyle={styles.label}
                     value={qtdPaginas !== null ? qtdPaginas.toString() : ""}
                     onChangeText={(text) => setQtdPaginas(Number(text))}
                     keyboardType="numeric"
@@ -196,7 +251,7 @@ export const AuthProviderList = (props: any): any => {
                 <View style={{ width: '60%' }}>
                   <Input
                     title="Gênero:"
-                    LabelStyle={styles.label}
+                    labelStyle={styles.label}
                     value={genero}
                     onChangeText={setGenero}
                   />
@@ -218,7 +273,7 @@ export const AuthProviderList = (props: any): any => {
   };
 
   return (
-    <AuthContextList.Provider value={{ onOpen, newBook, excluir }}>
+    <AuthContextList.Provider value={{ onOpen, newBook, excluir, handleEdit }}>
       {props.children}
       <Modalize
         ref={modalizeRef}
@@ -266,7 +321,6 @@ export const styles = StyleSheet.create({
   label: {
     fontWeight: 'bold',
     color: '#000',
-    textAlign: 'center',
     fontSize: 12,
     flexWrap: 'wrap',
   },
