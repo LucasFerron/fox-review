@@ -1,6 +1,18 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions } from "react-native";
 
 export const style = StyleSheet.create({
+  TabItemButton: {
+    backgroundColor: "#D9D9D9",
+    width: 70,
+    height: 70,
+    position: 'absolute',
+    bottom: 45,
+    right: 45,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex:9999
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -8,28 +20,77 @@ export const style = StyleSheet.create({
   },
   header: {
     width: '100%',
-    height: Dimensions.get('window').height / 8, // Altura do cabeçalho
+    height: Dimensions.get('window').height / 8,
     backgroundColor: '#02C4D2',
-    justifyContent: 'center', // Centraliza os elementos no eixo vertical
+    justifyContent: 'center',
+    paddingHorizontal:20,
+    
   },
   mini_logo: {
     width: 95,
     height: 95,
-    resizeMode: 'contain', // Mantém a proporção da imagem
-    position: 'absolute', // Fixa a posição da logo no centro
-    alignSelf: 'center', // Centraliza horizontalmente no pai
+    resizeMode: 'contain',
+    position: 'absolute', 
+    alignSelf: 'center', 
     top: '25%'
+  },
+  boxInput:{
+    width:'80%',
+  },
+  boxList:{
+    flex:1,
+    width:'100%',
+    //backgroundColor: '#E9FEFF',
+  },
+  card:{
+    width: '100%',
+    height: 60,
+    backgroundColor: '#D9D9D9',
+    marginTop:6,
+    borderRadius:10,
+    justifyContent:'center',
+    padding:10,
 
   },
-  greeting: {
-    fontSize: 20,
-    color: '#000000',
-    top: '25%',
-    marginLeft: 20, // Mantém o texto alinhado à esquerda
+  rowCard:{
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'space-between'
+
+
   },
-  content: {
-    fontSize: 18,
-    marginTop: 20,
-    color: '#333',
+  rowCardLeft:{
+    width:'70%',
+    flexDirection:'row',
+    alignItems:'center',
+    gap:10,
+    justifyContent: 'flex-start',
+    height: 60, 
+
   },
+  capa: {
+  width: '100%', 
+  height: '100%', 
+  resizeMode: 'contain', 
+  maxWidth: 50, 
+  maxHeight: 50, 
+},
+  titleCard:{
+    fontSize:16,
+    fontWeight:'bold'
+
+  },
+  descriptionCard:{
+    color:'gray'
+
+  },
+  button:{
+    backgroundColor:'red',
+    justifyContent:'center',
+    alignItems:'center',
+    width:100,
+    marginVertical:10,
+    borderRadius:10
+  }
+
 });

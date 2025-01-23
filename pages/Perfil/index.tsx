@@ -4,8 +4,10 @@ import { style } from './styles';
 import {Text, View, TouchableOpacity, Image}  from  'react-native';
 import Logo from '../../assets/logo.png'
 import { ScrollView } from 'react-native-gesture-handler';
+import database from '@react-native-firebase/database';
 
 export default function Perfil(){
+
 return(
     <View style={style.container}>
 

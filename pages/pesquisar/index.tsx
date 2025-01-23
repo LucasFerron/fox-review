@@ -96,7 +96,7 @@ export default function Pesquisar() {
       </View>
       <View style={style.boxList}>
         <FlatList
-          data={dataFilter.length > 0 ? dataFilter : newBook} // Exibe os dados filtrados ou os dados iniciais
+          data={dataFilter} // Exibe os dados filtrados ou os dados iniciais
           style={{ marginTop: 40, paddingHorizontal: 30 }}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => _renderCard(item, index)}
