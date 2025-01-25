@@ -19,7 +19,7 @@ return(
       <ScrollView>
         <View style={{alignSelf:'center'}}>
           <View style={style.profileImage}>
-            <Image source={require('../../assets/logo_perfil_FR.png')} style={style.image} resizeMode='center'></Image>
+            <Image source={require('../../assets/profile.jpg')} style={style.image} resizeMode='center'></Image>
           </View>
         </View >
 

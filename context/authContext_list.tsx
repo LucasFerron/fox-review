@@ -42,6 +42,9 @@ export const AuthProviderList = (props: any): any => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedBookId, setSelectedBookId] = useState('')
 
+  const [rating, setRating] = useState(0);
+  
+
   const [newBook, setNewBook] = useState<any[]>([]); // Estado para armazenar os livros recuperados
   const [dataFilter, setDataFilter] = useState<any[]>([]); // Adicionado o estado dataFilter
 
@@ -80,6 +83,7 @@ export const AuthProviderList = (props: any): any => {
         genero,
         flag: selectedFlag,
         lançamento: selectedDate.toISOString(),
+        rating,
       };
       const booksRef = ref(database, 'books');
   
@@ -92,6 +96,7 @@ export const AuthProviderList = (props: any): any => {
       setQtdPaginas(0);
       setGenero('');
       setSelectedFlag('');
+      setRating(rating || 0); // Carrega a avaliação do livro
       setSelectedDate(new Date());
       onClose(); // Fecha o modal
     } catch (error) {
@@ -136,7 +141,8 @@ export const AuthProviderList = (props: any): any => {
       setQtdPaginas(book.qtdPaginas);
       setGenero(book.genero);
       setSelectedFlag(book.flag);
-      setSelectedDate(new Date(book.lançamento)); 
+      setSelectedDate(new Date(book.lançamento));
+      setRating(0);
       setSelectedBookId(bookId);
       onOpen();
     }
@@ -156,6 +162,7 @@ export const AuthProviderList = (props: any): any => {
         genero,
         flag: selectedFlag,
         lançamento: selectedDate.toISOString(),
+        rating,
       };
 
       const bookRef = ref(database, 'books/' + selectedBookId); // Referência para o livro específico
@@ -174,6 +181,7 @@ export const AuthProviderList = (props: any): any => {
       setQtdPaginas(0);
       setGenero('');
       setSelectedFlag('');
+      setRating(0);
       setSelectedDate(new Date());
       setSelectedBookId('');
       onClose(); 
@@ -257,7 +265,8 @@ export const AuthProviderList = (props: any): any => {
                   />
                 </View>
                 <View>
-                  <Star />
+                  <Star
+                  />
                 </View>
               </View>
 
