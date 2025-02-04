@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-
+const {width} = Dimensions.get('window');
 export const style = StyleSheet.create({
   container: {
     flex: 1,
@@ -75,4 +75,10 @@ export const style = StyleSheet.create({
     fontSize: 14,
     color: '#555',
   },
+  image: {
+    width: width, // Ocupa toda a largura da tela
+    height: width * 0.5, // Mantém uma proporção adequada
+    resizeMode: "contain", 
+    borderRadius: 80, 
+  }
 });

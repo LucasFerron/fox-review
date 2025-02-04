@@ -1,16 +1,43 @@
 import React, { useContext, useRef, useState } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, Dimensions } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { style } from './styles';
 import { AuthContextList } from '../../context/authContext_list';
 import Logo from '../../assets/logo.png';
 import Flag from '../../Flag/index';
-import { Swipeable } from 'react-native-gesture-handler';
+import { ScrollView, Swipeable } from 'react-native-gesture-handler';
 
 export default function Pesquisar() {
   const { onOpen, newBook, excluir, handleEdit } = useContext<AuthContextType>(AuthContextList);
   const swipeableRefs = useRef([]);
   const [expandedItems, setExpandedItems] = useState<number[]>([]); // Estado para controlar os itens expandidos
+
+  const {width} = Dimensions.get('window');
+
+  const images = [
+    {
+      id: 1,
+      image: require("../../assets/profile.jpg")
+    },
+    {
+      id: 2,
+      image: require("../../assets/profile.jpg")
+    },
+    {
+      id: 3,
+      image: require("../../assets/profile.jpg")
+    },
+    {
+      id: 4,
+      image: require("../../assets/profile.jpg")
+    },
+  ]
+
+  const OnBoardingItem = ({item}) => {
+    return(
+      <Image source={item.image} style={style.image} />
+    )
+  }
 
   const formatarData = (data: string) => {
     // Aqui você pode fazer o corte, por exemplo, pegando os 10 primeiros caracteres
@@ -92,13 +119,28 @@ export default function Pesquisar() {
       <View style={style.header}>
         <Image style={style.mini_logo} source={Logo} />
       </View>
+
+    
       <View style={style.boxList}>
-        <FlatList
+        <ScrollView>  {/*conversar com o jackson para trocar isto */}
+          <FlatList
+            data={images}
+            style={{maxHeight:200, marginTop: 20, maxWidth:width}}
+            pagingEnabled
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => String(item?.id)}
+            renderItem={({item}) => <OnBoardingItem item={item}/>}
+          />
+          <FlatList
           data={newBook} // Exibe os dados
           style={{ marginTop: 40, paddingHorizontal: 30 }}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => _renderCard(item, index)}
         />
+        </ScrollView> 
+        
+        
       </View>
     </View>
   );
