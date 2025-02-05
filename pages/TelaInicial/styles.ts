@@ -79,6 +79,17 @@ export const style = StyleSheet.create({
     width: width, // Ocupa toda a largura da tela
     height: width * 0.5, // Mantém uma proporção adequada
     resizeMode: "contain", 
-    borderRadius: 80, 
+    borderRadius: 20, 
+  },
+  dotsContainer:{
+    flexDirection:'row',
+    justifyContent:'center',
+    marginTop:10,
+  },
+  dot:{
+    width:8,
+    height:8,
+    borderRadius:4,
+    marginHorizontal:1
   }
 });

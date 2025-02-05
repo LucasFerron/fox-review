@@ -17,11 +17,11 @@ export default function Pesquisar() {
   const images = [
     {
       id: 1,
-      image: require("../../assets/profile.jpg")
+      image: require("../../assets/tela1.png")
     },
     {
       id: 2,
-      image: require("../../assets/profile.jpg")
+      image: require("../../assets/tela2.png")
     },
     {
       id: 3,
@@ -32,6 +32,8 @@ export default function Pesquisar() {
       image: require("../../assets/profile.jpg")
     },
   ]
+  const [activeIndex, setActiveIndex] = useState(0)
+  
 
   const OnBoardingItem = ({item}) => {
     return(
@@ -128,10 +130,27 @@ export default function Pesquisar() {
             style={{maxHeight:200, marginTop: 20, maxWidth:width}}
             pagingEnabled
             horizontal
+            onMomentumScrollEnd={(event)=> {
+              setActiveIndex(Math.floor(event.nativeEvent.contentOffset.x/width))
+            }}
+            scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => String(item?.id)}
             renderItem={({item}) => <OnBoardingItem item={item}/>}
           />
+          {
+            images.length > 1 ? 
+            <View style={style.dotsContainer}>
+              {
+                images.map((_,i)=> (
+                  <View
+                    style={[style.dot,{backgroundColor: i == activeIndex ? 'blue' : 'gray'}]}
+                  />
+                ))
+              }
+            </View>
+            : null
+          }
           <FlatList
           data={newBook} // Exibe os dados
           style={{ marginTop: 40, paddingHorizontal: 30 }}
