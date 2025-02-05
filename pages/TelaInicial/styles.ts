@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
+
 const {width} = Dimensions.get('window');
 export const style = StyleSheet.create({
   container: {
@@ -91,5 +92,12 @@ export const style = StyleSheet.create({
     height:8,
     borderRadius:4,
     marginHorizontal:1
+  },
+  text:{
+    fontFamily:'Avenir Next',
+    fontWeight:700,
+    marginTop:10,
+    textAlign:'center',
+    fontSize:25
   }
 });

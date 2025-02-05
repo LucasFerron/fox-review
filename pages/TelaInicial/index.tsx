@@ -25,21 +25,24 @@ export default function Pesquisar() {
     },
     {
       id: 3,
-      image: require("../../assets/profile.jpg")
+      image: require("../../assets/tela3.png")
     },
     {
       id: 4,
-      image: require("../../assets/profile.jpg")
+      image: require("../../assets/tela4.png")
+    },
+    {
+      id: 5,
+      image: require("../../assets/tela5.png")
     },
   ]
   const [activeIndex, setActiveIndex] = useState(0)
   
 
-  const OnBoardingItem = ({item}) => {
-    return(
-      <Image source={item.image} style={style.image} />
-    )
-  }
+  const OnBoardingItem = ({ item }) => {
+    if (!item || !item.image) return null;
+    return <Image source={item.image} style={style.image} />;
+  };
 
   const formatarData = (data: string) => {
     // Aqui você pode fazer o corte, por exemplo, pegando os 10 primeiros caracteres
@@ -124,7 +127,7 @@ export default function Pesquisar() {
 
     
       <View style={style.boxList}>
-        <ScrollView>  {/*conversar com o jackson para trocar isto */}
+        <ScrollView>  
           <FlatList
             data={images}
             style={{maxHeight:200, marginTop: 20, maxWidth:width}}
@@ -135,7 +138,7 @@ export default function Pesquisar() {
             }}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => String(item?.id)}
+            keyExtractor={(item, index) => item?.id ? String(item.id) : String(index)}
             renderItem={({item}) => <OnBoardingItem item={item}/>}
           />
           {
@@ -144,6 +147,7 @@ export default function Pesquisar() {
               {
                 images.map((_,i)=> (
                   <View
+                    key={i}
                     style={[style.dot,{backgroundColor: i == activeIndex ? 'blue' : 'gray'}]}
                   />
                 ))
@@ -151,9 +155,10 @@ export default function Pesquisar() {
             </View>
             : null
           }
+          <Text style={style.text}>Livros registrados</Text>
           <FlatList
           data={newBook} // Exibe os dados
-          style={{ marginTop: 40, paddingHorizontal: 30 }}
+          style={{ marginTop: 20, paddingHorizontal: 30 }}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => _renderCard(item, index)}
         />
